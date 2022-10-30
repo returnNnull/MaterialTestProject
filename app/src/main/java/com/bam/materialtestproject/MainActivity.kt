@@ -17,11 +17,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addButton = findViewById(R.id.floatingActionButton)
 
+
+        addButton = findViewById(R.id.floatingActionButton)
         addButton.setOnClickListener {
             goToEditActivity()
         }
+
 
         if (intent != null) {
             val name = intent.getStringExtra("name").toString()
