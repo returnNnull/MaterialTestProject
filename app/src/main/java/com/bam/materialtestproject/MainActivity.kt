@@ -2,47 +2,36 @@ package com.bam.materialtestproject
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.bam.materialtestproject.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var addButton: FloatingActionButton;
+    lateinit var binding: ActivityMainBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        addButton = findViewById(R.id.floatingActionButton)
-
-        addButton.setOnClickListener {
-            goToEditActivity()
+        binding.floatingActionButton.setOnClickListener {
+            goToEditActivity(-1)
         }
 
-        if (intent.extras != null) {
-            val name = intent.getStringExtra("name").toString()
-            val country = intent.getStringExtra("country").toString()
-            val year = intent.getIntExtra("year", 0)
-            val color = intent.getStringExtra("color").toString()
-            PhonesRepository.list.add(Phone(name, country, year, color))
-        } else {
-            Log.e("MY_LOG", "NULL")
-        }
 
         PhonesRepository.initList()
-        val adapter = PhoneListAdapter(PhonesRepository.list)
-        val recyclerView: RecyclerView = findViewById(R.id.phone_list)
-        recyclerView.adapter = adapter
+        val adapter = PhoneListAdapter(PhonesRepository.getAllPhones())
+        adapter.listener {
+            goToEditActivity(it)
+        }
+        binding.phoneList.adapter = adapter
 
     }
 
-    fun goToEditActivity() {
+    private fun goToEditActivity(position: Int) {
         val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra("id", position)
         startActivity(intent)
     }
 

@@ -1,54 +1,62 @@
 package com.bam.materialtestproject
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.opengl.Visibility
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import com.google.android.material.textfield.TextInputLayout
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import com.bam.materialtestproject.databinding.ActivityEditBinding
 
 class EditActivity : AppCompatActivity() {
 
-    lateinit var name: TextInputLayout
-    lateinit var country: TextInputLayout
-    lateinit var createYear: TextInputLayout
-    lateinit var color: TextInputLayout
-    lateinit var createBtn:Button
+    private lateinit var binding: ActivityEditBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit)
+        binding = ActivityEditBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
 
-        initViews()
+        if (intent.extras != null) {
+            val id = intent.getIntExtra("id", 0)
+            if (id != -1) {
+                binding.deleteBtn.visibility = View.VISIBLE
 
-        createBtn.setOnClickListener {
-            val nameText = name.editText?.text.toString()
-            val country = country.editText?.text.toString()
-            val createText = createYear.editText?.text.toString()
-            val color = color.editText?.text.toString()
-            val phone = Phone(nameText, country, createText.toInt(), color)
-            goToMainActivity(phone)
+                binding.deleteBtn.setOnClickListener {
+                    PhonesRepository.deletePhone(id)
+                    goToMainActivity()
+                }
+
+                binding.phone = PhonesRepository.getPhoneById(id)
+                binding.button.setOnClickListener {
+                    PhonesRepository.updatePhone(id, initPhone())
+                    goToMainActivity()
+                }
+            }
+            else {
+                binding.button.setOnClickListener {
+                    PhonesRepository.insertPhone(initPhone())
+                    goToMainActivity()
+                }
+            }
         }
 
     }
 
 
-    fun goToMainActivity(phone: Phone){
+    private fun initPhone(): Phone {
+        val nameText = binding.nameEditText.editText?.text.toString()
+        val country = binding.countryEditText.editText?.text.toString()
+        val createText = binding.createYearEditText.editText?.text.toString()
+        val color = binding.colorEditText.editText?.text.toString()
+
+        return Phone(nameText, country, createText.toInt(), color)
+    }
+
+    private fun goToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("name", phone.name)
-        intent.putExtra("country", phone.country)
-        intent.putExtra("year", phone.createYear)
-        intent.putExtra("color", phone.color)
         startActivity(intent)
     }
 
 
-    private fun initViews() {
-       name = findViewById(R.id.nameEditText)
-        country = findViewById(R.id.countryEditText)
-        createYear = findViewById(R.id.createYearEditText)
-        color = findViewById(R.id.colorEditText)
-        createBtn = findViewById(R.id.button)
-    }
 }

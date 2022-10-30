@@ -4,38 +4,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bam.materialtestproject.databinding.PhoneListItemBinding
 
 class PhoneListAdapter(var phoneList: MutableList<Phone>): RecyclerView.Adapter<PhoneListAdapter.ViewHolder>() {
 
+
+    private lateinit var listener: (Int) -> Unit
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var name: TextView
-        var country: TextView
-        var year: TextView
-        var color: TextView
-
-        init {
-            name = itemView.findViewById(R.id.nameTextView)
-            country = itemView.findViewById(R.id.countryTextView)
-            year = itemView.findViewById(R.id.yearTextView)
-            color = itemView.findViewById(R.id.colorTextView)
-        }
-
+        val binding = DataBindingUtil.findBinding<PhoneListItemBinding>(itemView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.phone_list_item, parent, false)
-        return ViewHolder(view)
+      val binding = PhoneListItemBinding.inflate(LayoutInflater.from(parent.context))
+        return ViewHolder(binding.root)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.name.text = phoneList[position].name
-        holder.color.text = phoneList[position].color
-        holder.country.text = phoneList[position].country
-        holder.year.text = phoneList[position].createYear.toString()
+        if (holder.binding != null){
+            holder.binding.phone = phoneList[position]
+            holder.binding.root.setOnClickListener {
+                listener(position)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
         return phoneList.size
+    }
+
+    fun listener(value: (Int) -> Unit) {
+        listener = value
     }
 }
