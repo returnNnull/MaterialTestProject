@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             goToEditActivity()
         }
 
-        if (intent != null) {
+        if (intent.extras != null) {
             val name = intent.getStringExtra("name").toString()
             val country = intent.getStringExtra("country").toString()
             val year = intent.getIntExtra("year", 0)
@@ -33,11 +34,10 @@ class MainActivity : AppCompatActivity() {
             Log.e("MY_LOG", "NULL")
         }
 
-
-        val adapter = PhoneListAdapter(this, R.layout.phone_list_item, layoutInflater)
-        adapter.addAll(PhonesRepository.list)
-        val listView: ListView = findViewById(R.id.listView)
-        listView.adapter = adapter
+        PhonesRepository.initList()
+        val adapter = PhoneListAdapter(PhonesRepository.list)
+        val recyclerView: RecyclerView = findViewById(R.id.phone_list)
+        recyclerView.adapter = adapter
 
     }
 
